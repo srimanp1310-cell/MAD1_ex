@@ -1,0 +1,50 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'users' %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+<h2 class="mb-3">Users (Trekkers)</h2>
+
+<form method="get" class="mb-3">
+  <div class="input-group" style="max-width: 400px;">
+    <input class="form-control" type="text" name="q" placeholder="Search users by name or ID…" value="{{ q }}">
+    <button class="btn btn-outline-secondary" type="submit">Search</button>
+  </div>
+</form>
+
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th><th>Name</th><th>Email</th><th>Bookings</th><th>Joined</th><th>Status</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.full_name }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.bookings.count() }}</td>
+        <td>{{ u.created_at.strftime('%d %b %Y') }}</td>
+        <td>
+          <span class="badge bg-{{ 'dark' if u.is_blacklisted else 'success' }}">
+            {{ 'Blacklisted' if u.is_blacklisted else 'Active' }}
+          </span>
+        </td>
+        <td>
+          <form class="d-inline" method="post" action="{{ url_for('admin.toggle_blacklist', user_id=u.id) }}">
+            <button class="btn btn-sm btn-outline-{{ 'success' if u.is_blacklisted else 'dark' }}" type="submit">
+              {{ 'Re-activate' if u.is_blacklisted else 'Blacklist' }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-3">
+        {{ 'No users match your search.' if q else 'No registered users yet.' }}
+      </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

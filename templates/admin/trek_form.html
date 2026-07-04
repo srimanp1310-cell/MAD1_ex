@@ -1,0 +1,85 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'treks' %}
+{% block title %}{{ 'Edit Trek' if trek else 'Add New Trek' }}{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ 'Edit Trek' if trek else 'Add New Trek' }}</h2>
+
+{# On validation failure re-show submitted values; otherwise show trek values #}
+{% set v = form if form else {} %}
+<div class="card shadow-sm">
+  <div class="card-body p-4">
+    <form method="post" novalidate>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="name">Trek Name</label>
+          <input class="form-control" type="text" id="name" name="name" required
+                 value="{{ v.get('name', trek.name if trek else '') }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="location">Location</label>
+          <input class="form-control" type="text" id="location" name="location" required
+                 value="{{ v.get('location', trek.location if trek else '') }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="difficulty">Difficulty</label>
+          {% set sel_diff = v.get('difficulty', trek.difficulty if trek else '') %}
+          <select class="form-select" id="difficulty" name="difficulty" required>
+            <option value="">-- Select --</option>
+            {% for d in difficulties %}
+            <option value="{{ d }}" {{ 'selected' if sel_diff == d }}>{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="duration_days">Duration (Days)</label>
+          <input class="form-control" type="number" id="duration_days" name="duration_days"
+                 min="1" required value="{{ v.get('duration_days', trek.duration_days if trek else '') }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="total_slots">Total Slots</label>
+          <input class="form-control" type="number" id="total_slots" name="total_slots"
+                 min="1" required value="{{ v.get('total_slots', trek.total_slots if trek else '') }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="start_date">Start Date</label>
+          <input class="form-control" type="date" id="start_date" name="start_date"
+                 value="{{ v.get('start_date', trek.start_date.isoformat() if trek and trek.start_date else '') }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="end_date">End Date</label>
+          <input class="form-control" type="date" id="end_date" name="end_date"
+                 value="{{ v.get('end_date', trek.end_date.isoformat() if trek and trek.end_date else '') }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="staff_id">Assign Staff</label>
+          {% set sel_staff = v.get('staff_id', trek.staff_id|string if trek and trek.staff_id else '') %}
+          <select class="form-select" id="staff_id" name="staff_id">
+            <option value="">-- Select Staff --</option>
+            {% for s in staff_options %}
+            <option value="{{ s.id }}" {{ 'selected' if sel_staff == s.id|string }}>{{ s.full_name }} (S{{ '%03d' % s.id }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="status">Status</label>
+          {% set sel_status = v.get('status', trek.status if trek else 'Pending') %}
+          <select class="form-select" id="status" name="status" required>
+            {% for st in statuses %}
+            <option value="{{ st }}" {{ 'selected' if sel_status == st }}>{{ st }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="description">Description</label>
+          <textarea class="form-control" id="description" name="description"
+                    rows="3">{{ v.get('description', trek.description if trek else '') }}</textarea>
+        </div>
+      </div>
+      <div class="mt-4 d-flex gap-2 justify-content-end">
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.treks') }}">Cancel</a>
+        <button class="btn btn-primary" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

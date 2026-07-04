@@ -1,9 +1,60 @@
-{% extends "base.html" %}
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'dashboard' %}
 {% block title %}Admin Dashboard{% endblock %}
-{% block sidebar %}
-<li class="nav-item"><a class="nav-link active" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
-{% endblock %}
 {% block content %}
-<h2>Dashboard</h2>
-<p class="text-muted">Admin management features arrive in the next milestone.</p>
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row g-3 mb-4">
+  {% for label, value, link in [
+      ('Total Treks', stats.treks, url_for('admin.treks')),
+      ('Total Users', stats.users, url_for('admin.users')),
+      ('Total Staff', stats.staff, url_for('admin.staff')),
+      ('Total Bookings', stats.bookings, url_for('admin.bookings')),
+  ] %}
+  <div class="col-md-3">
+    <a href="{{ link }}" class="text-decoration-none">
+      <div class="card shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="text-muted">{{ label }}</h6>
+          <h2 class="mb-0">{{ value }}</h2>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+{% if stats.pending_staff %}
+<div class="alert alert-warning">
+  {{ stats.pending_staff }} staff registration(s) awaiting approval —
+  <a href="{{ url_for('admin.staff') }}" class="alert-link">review now</a>.
+</div>
+{% endif %}
+
+<h5>Recent Bookings</h5>
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Booking ID</th><th>User</th><th>Trek</th><th>Booking Date</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in recent_bookings %}
+      <tr>
+        <td>B{{ '%03d' % b.id }}</td>
+        <td>{{ b.user.full_name }}</td>
+        <td>{{ b.trek.name }}</td>
+        <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
+        <td><span class="badge bg-{{ 'success' if b.status == 'Booked' else 'secondary' if b.status == 'Completed' else 'danger' }}">{{ b.status }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="text-center text-muted py-3">No bookings yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="text-end mt-2">
+  <a href="{{ url_for('admin.bookings') }}">View All Bookings →</a>
+</div>
 {% endblock %}

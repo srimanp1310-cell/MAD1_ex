@@ -1,0 +1,32 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'bookings' %}
+{% block title %}All Bookings{% endblock %}
+{% block content %}
+<h2 class="mb-3">All Bookings</h2>
+
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Booking ID</th><th>User</th><th>Trek</th><th>Trek Status</th>
+        <th>Booking Date</th><th>Status</th><th>Payment</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr>
+        <td>B{{ '%03d' % b.id }}</td>
+        <td>{{ b.user.full_name }}</td>
+        <td>{{ b.trek.name }}</td>
+        <td>{{ b.trek.status }}</td>
+        <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
+        <td><span class="badge bg-{{ 'success' if b.status == 'Booked' else 'secondary' if b.status == 'Completed' else 'danger' }}">{{ b.status }}</span></td>
+        <td>{{ b.payment_status }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-3">No bookings recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

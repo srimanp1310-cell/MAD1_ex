@@ -1,0 +1,50 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'treks' %}
+{% block title %}Manage Treks{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Treks</h2>
+  <a class="btn btn-primary" href="{{ url_for('admin.add_trek') }}">+ Add New Trek</a>
+</div>
+
+<form method="get" class="mb-3">
+  <div class="input-group" style="max-width: 400px;">
+    <input class="form-control" type="text" name="q" placeholder="Search treks by name or ID…" value="{{ q }}">
+    <button class="btn btn-outline-secondary" type="submit">Search</button>
+  </div>
+</form>
+
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th><th>Trek Name</th><th>Location</th><th>Difficulty</th>
+        <th>Slots</th><th>Staff</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in treks %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.name }}</td>
+        <td>{{ t.location }}</td>
+        <td>{{ t.difficulty }}</td>
+        <td>{{ t.available_slots }}/{{ t.total_slots }}</td>
+        <td>{{ t.assigned_staff.full_name if t.assigned_staff else '—' }}</td>
+        <td><span class="badge bg-{{ 'success' if t.status == 'Open' else 'info' if t.status in ('Approved','Started') else 'secondary' }}">{{ t.status }}</span></td>
+        <td>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.edit_trek', trek_id=t.id) }}">Edit</a>
+          <form class="d-inline" method="post" action="{{ url_for('admin.delete_trek', trek_id=t.id) }}">
+            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="text-center text-muted py-3">
+        {{ 'No treks match your search.' if q else 'No treks yet — add the first one!' }}
+      </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block sidebar %}
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'dashboard' }}" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'treks' }}" href="{{ url_for('admin.treks') }}">Treks</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'staff' }}" href="{{ url_for('admin.staff') }}">Staff</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'users' }}" href="{{ url_for('admin.users') }}">Users</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'bookings' }}" href="{{ url_for('admin.bookings') }}">Bookings</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'search' }}" href="{{ url_for('admin.search') }}">Search</a></li>
+{% endblock %}

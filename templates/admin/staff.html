@@ -1,0 +1,63 @@
+{% extends "admin/base_admin.html" %}
+{% set active_page = 'staff' %}
+{% block title %}Manage Staff{% endblock %}
+{% block content %}
+<h2 class="mb-3">Staff Requests</h2>
+
+<ul class="nav nav-tabs mb-3">
+  {% for name, label in [('pending', 'Pending'), ('approved', 'Approved'), ('blacklisted', 'Rejected / Blacklisted')] %}
+  <li class="nav-item">
+    <a class="nav-link {{ 'active' if tab == name }}" href="{{ url_for('admin.staff', tab=name) }}">
+      {{ label }} ({{ counts[name] }})
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Staff ID</th><th>Name</th><th>Email</th><th>Contact</th><th>Status</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in staff_list %}
+      <tr>
+        <td>S{{ '%03d' % s.id }}</td>
+        <td>{{ s.full_name }}</td>
+        <td>{{ s.email }}</td>
+        <td>{{ s.staff_profile.contact_number or '—' }}</td>
+        <td>
+          {% if s.is_blacklisted %}
+            <span class="badge bg-dark">Blacklisted</span>
+          {% else %}
+            <span class="badge bg-{{ 'success' if s.staff_profile.approval_status == 'Approved' else 'warning text-dark' if s.staff_profile.approval_status == 'Pending' else 'danger' }}">
+              {{ s.staff_profile.approval_status }}
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          {% if tab == 'pending' %}
+            <form class="d-inline" method="post" action="{{ url_for('admin.approve_staff', user_id=s.id) }}">
+              <button class="btn btn-sm btn-success" type="submit">Approve</button>
+            </form>
+            <form class="d-inline" method="post" action="{{ url_for('admin.reject_staff', user_id=s.id) }}">
+              <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+            </form>
+          {% else %}
+            <form class="d-inline" method="post" action="{{ url_for('admin.toggle_blacklist', user_id=s.id) }}">
+              <button class="btn btn-sm btn-outline-{{ 'success' if s.is_blacklisted else 'dark' }}" type="submit">
+                {{ 'Re-activate' if s.is_blacklisted else 'Blacklist' }}
+              </button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-3">No staff in this category.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

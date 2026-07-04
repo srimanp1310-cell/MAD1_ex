@@ -1,10 +1,11 @@
 """Trekking Management Application — entry point.
 
 Creates the Flask app, initialises the SQLite database programmatically
-(no manual DB creation), and pre-seeds the admin superuser.
+(no manual DB creation), pre-seeds the admin superuser, and registers
+the role-specific blueprints.
 """
 
-from flask import Flask
+from flask import Flask, render_template
 from werkzeug.security import generate_password_hash
 
 from models import db, User
@@ -38,15 +39,30 @@ def create_app():
         db.create_all()
         seed_admin()
 
+    from controllers.auth import auth_bp
+    from controllers.admin import admin_bp
+    from controllers.staff import staff_bp
+    from controllers.user import user_bp
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(staff_bp)
+    app.register_blueprint(user_bp)
+
+    from utils import current_user
+
+    @app.context_processor
+    def inject_user():
+        return {"user": current_user()}
+
+    @app.errorhandler(403)
+    def forbidden(_e):
+        return render_template("errors/403.html"), 403
+
     return app
 
 
 app = create_app()
-
-
-@app.route("/")
-def index():
-    return "Trekking Management Application — setup OK"
 
 
 if __name__ == "__main__":
