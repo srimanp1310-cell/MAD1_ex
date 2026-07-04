@@ -1,0 +1,59 @@
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-4">
+    <input class="form-control" type="text" name="q" placeholder="Search treks by name…"
+           value="{{ request.args.get('q', '') }}">
+  </div>
+  <div class="col-md-3">
+    <select class="form-select" name="difficulty">
+      <option value="">Difficulty: All</option>
+      {% for d in difficulties %}
+      <option value="{{ d }}" {{ 'selected' if request.args.get('difficulty') == d }}>{{ d }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select class="form-select" name="location">
+      <option value="">Location: All</option>
+      {% for loc in locations %}
+      <option value="{{ loc }}" {{ 'selected' if request.args.get('location') == loc }}>{{ loc }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-outline-primary w-100" type="submit">Filter</button>
+  </div>
+</form>
+
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Trek Name</th><th>Location</th><th>Difficulty</th>
+        <th>Duration</th><th>Available Slots</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in treks %}
+      <tr>
+        <td>{{ t.name }}</td>
+        <td>{{ t.location }}</td>
+        <td>{{ t.difficulty }}</td>
+        <td>{{ t.duration_days }} days</td>
+        <td>{{ t.available_slots }}</td>
+        <td>
+          <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('user.trek_detail', trek_id=t.id) }}">View</a>
+          {% if t.available_slots > 0 %}
+          <form class="d-inline" method="post" action="{{ url_for('user.book_trek', trek_id=t.id) }}">
+            <button class="btn btn-sm btn-primary" type="submit">Book Now</button>
+          </form>
+          {% else %}
+          <span class="badge bg-danger">Full</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-3">No open treks match your filters.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

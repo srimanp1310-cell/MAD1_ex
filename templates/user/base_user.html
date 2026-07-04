@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block sidebar %}
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'dashboard' }}" href="{{ url_for('user.dashboard') }}">Dashboard</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'treks' }}" href="{{ url_for('user.treks') }}">Browse Treks</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'bookings' }}" href="{{ url_for('user.bookings') }}">My Bookings</a></li>
+<li class="nav-item"><a class="nav-link {{ 'active' if active_page == 'profile' }}" href="{{ url_for('user.profile') }}">Profile</a></li>
+{% endblock %}
