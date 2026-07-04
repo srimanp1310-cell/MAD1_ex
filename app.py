@@ -6,6 +6,7 @@ the role-specific blueprints.
 """
 
 from flask import Flask, render_template
+from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
 
 from models import db, User
@@ -27,6 +28,23 @@ def seed_admin():
         db.session.commit()
 
 
+def sync_legacy_schema():
+    """Upgrade databases created before available_slots became a computed value.
+
+    Older database files have a NOT NULL treks.available_slots column that the
+    current model no longer fills in, which would break every trek INSERT.
+    Dropping the legacy column programmatically keeps old DB files working.
+    """
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(db.engine)
+    if "treks" in inspector.get_table_names():
+        columns = [c["name"] for c in inspector.get_columns("treks")]
+        if "available_slots" in columns:
+            db.session.execute(text("ALTER TABLE treks DROP COLUMN available_slots"))
+            db.session.commit()
+
+
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "tma-mad1-secret-key"
@@ -37,6 +55,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        sync_legacy_schema()
         seed_admin()
 
     from controllers.auth import auth_bp
@@ -55,9 +74,31 @@ def create_app():
     def inject_user():
         return {"user": current_user()}
 
+    # ---- friendly error pages (no raw tracebacks for end users) ----
+
     @app.errorhandler(403)
     def forbidden(_e):
         return render_template("errors/403.html"), 403
+
+    @app.errorhandler(404)
+    def not_found(_e):
+        return render_template("errors/404.html"), 404
+
+    @app.errorhandler(SQLAlchemyError)
+    def database_error(e):
+        db.session.rollback()
+        app.logger.error("Database error: %s", e)
+        return render_template(
+            "errors/500.html",
+            reason=(
+                "Something went wrong while saving your changes. "
+                "Please check your input and try again."
+            ),
+        ), 500
+
+    @app.errorhandler(500)
+    def internal_error(_e):
+        return render_template("errors/500.html", reason=None), 500
 
     return app
 

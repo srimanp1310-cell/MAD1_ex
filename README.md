@@ -39,3 +39,4 @@ progresses.
 |---|-------|------------|
 | 1 | Trek form accepted a duration that contradicted the start/end dates (e.g. 3 days with a 5-day date range). | Added backend validation in `_validate_trek_form` to require duration = (end − start) + 1 days, inclusive. |
 | 2 | Staff could manually set "available slots", letting it drift from real bookings (slots appeared filled with zero participants). | Removed the stored `available_slots` column; it is now always computed as total slots − active bookings. Staff edit total capacity instead. |
+| 3 | Adding a trek failed with `IntegrityError: NOT NULL constraint failed: treks.available_slots` on databases created before fix #2, and the raw SQLAlchemy traceback was shown to the user. | Added `sync_legacy_schema()` in `app.py` to drop the legacy column programmatically at startup, plus friendly 404/500 error pages and a global `SQLAlchemyError` handler that rolls back and shows guidance instead of tracebacks. |

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong{% endblock %}
+{% block content %}
+<div class="text-center mt-5">
+  <h1 class="display-4">Oops!</h1>
+  <p class="lead">{{ reason or "An unexpected error occurred. Please try again." }}</p>
+  <p class="text-muted">If the problem persists, contact the administrator.</p>
+  <a class="btn btn-primary" href="{{ url_for('auth.index') }}">Go to my dashboard</a>
+</div>
+{% endblock %}
