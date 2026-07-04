@@ -93,6 +93,16 @@ def _validate_trek_form(form):
     if data.get("start_date") and data.get("end_date") and data["end_date"] < data["start_date"]:
         errors.append("End date cannot be before start date.")
 
+    # duration must match the selected date range (inclusive of both days)
+    if "duration_days" in data and data.get("start_date") and data.get("end_date") \
+            and data["end_date"] >= data["start_date"]:
+        span = (data["end_date"] - data["start_date"]).days + 1
+        if span != data["duration_days"]:
+            errors.append(
+                f"Duration ({data['duration_days']} days) does not match the selected "
+                f"dates ({span} days from start to end date, inclusive)."
+            )
+
     staff_id = form.get("staff_id", "")
     if staff_id:
         staff = next((s for s in _approved_staff() if str(s.id) == staff_id), None)
