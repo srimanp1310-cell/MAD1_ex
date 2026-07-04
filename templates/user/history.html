@@ -1,0 +1,36 @@
+{% extends "user/base_user.html" %}
+{% set active_page = 'history' %}
+{% block title %}Trekking History{% endblock %}
+{% block content %}
+<h2 class="mb-4">Trekking History</h2>
+
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Trek Name</th><th>Trek Dates</th><th>Booked On</th>
+        <th>Completed On</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr>
+        <td>{{ b.trek.name }}</td>
+        <td>
+          {% if b.trek.start_date and b.trek.end_date %}
+            {{ b.trek.start_date.strftime('%d %b %Y') }} – {{ b.trek.end_date.strftime('%d %b %Y') }}
+          {% else %}—{% endif %}
+        </td>
+        <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
+        <td>{{ b.completed_on.strftime('%d %b %Y') if b.completed_on else '—' }}</td>
+        <td><span class="badge bg-{{ 'secondary' if b.status == 'Completed' else 'danger' }}">{{ b.status }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="text-center text-muted py-3">
+        No trekking history yet — it appears here once your treks are completed (or cancelled).
+      </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

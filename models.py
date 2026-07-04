@@ -122,6 +122,7 @@ class Booking(db.Model):
         db.String(10), nullable=False, default="Booked"
     )  # Booked / Cancelled / Completed
     payment_status = db.Column(db.String(10), nullable=False, default="Paid")
+    completed_on = db.Column(db.DateTime)  # set when the trek is completed
 
     user = db.relationship("User", back_populates="bookings")
     trek = db.relationship("Trek", back_populates="bookings")

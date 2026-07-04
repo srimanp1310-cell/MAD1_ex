@@ -2,14 +2,23 @@
 {% set active_page = 'bookings' %}
 {% block title %}All Bookings{% endblock %}
 {% block content %}
-<h2 class="mb-3">All Bookings</h2>
+<h2 class="mb-3">Bookings &amp; Trekking History</h2>
+
+<ul class="nav nav-tabs mb-3">
+  {% for value, label in [('', 'All'), ('Booked', 'Active'), ('Completed', 'Completed'), ('Cancelled', 'Cancelled')] %}
+  <li class="nav-item">
+    <a class="nav-link {{ 'active' if status == value }}"
+       href="{{ url_for('admin.bookings', status=value or None) }}">{{ label }}</a>
+  </li>
+  {% endfor %}
+</ul>
 
 <div class="card shadow-sm">
   <table class="table table-hover mb-0 align-middle">
     <thead class="table-light">
       <tr>
         <th>Booking ID</th><th>User</th><th>Trek</th><th>Trek Status</th>
-        <th>Booking Date</th><th>Status</th><th>Payment</th>
+        <th>Booking Date</th><th>Completed On</th><th>Status</th><th>Payment</th>
       </tr>
     </thead>
     <tbody>
@@ -20,11 +29,12 @@
         <td>{{ b.trek.name }}</td>
         <td>{{ b.trek.status }}</td>
         <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
+        <td>{{ b.completed_on.strftime('%d %b %Y') if b.completed_on else '—' }}</td>
         <td><span class="badge bg-{{ 'success' if b.status == 'Booked' else 'secondary' if b.status == 'Completed' else 'danger' }}">{{ b.status }}</span></td>
         <td>{{ b.payment_status }}</td>
       </tr>
       {% else %}
-      <tr><td colspan="7" class="text-center text-muted py-3">No bookings recorded yet.</td></tr>
+      <tr><td colspan="8" class="text-center text-muted py-3">No bookings in this category.</td></tr>
       {% endfor %}
     </tbody>
   </table>

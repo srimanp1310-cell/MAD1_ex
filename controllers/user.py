@@ -132,6 +132,19 @@ def cancel_booking(booking_id):
     return redirect(url_for("user.bookings"))
 
 
+@user_bp.route("/history")
+@role_required("user")
+def history():
+    """Trekking history: completed and cancelled bookings of this user."""
+    past = (
+        current_user().bookings
+        .filter(Booking.status.in_(("Completed", "Cancelled")))
+        .order_by(Booking.booking_date.desc())
+        .all()
+    )
+    return render_template("user/history.html", bookings=past)
+
+
 # ------------------------------------------------------------------ profile
 
 @user_bp.route("/profile", methods=["GET", "POST"])

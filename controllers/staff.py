@@ -1,5 +1,7 @@
 """Trek Staff: dashboard, assigned trek management, participants, profile."""
 
+from datetime import datetime
+
 from flask import (
     Blueprint, abort, flash, redirect, render_template, request, url_for
 )
@@ -112,6 +114,7 @@ def mark_trek(trek_id, action):
         # record trekking history: active bookings become Completed
         for booking in trek.bookings.filter_by(status="Booked").all():
             booking.status = "Completed"
+            booking.completed_on = datetime.utcnow()
         flash(f"'{trek.name}' marked as completed.", "success")
     else:
         abort(404)

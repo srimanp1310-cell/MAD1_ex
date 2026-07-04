@@ -43,6 +43,11 @@ def sync_legacy_schema():
         if "available_slots" in columns:
             db.session.execute(text("ALTER TABLE treks DROP COLUMN available_slots"))
             db.session.commit()
+    if "bookings" in inspector.get_table_names():
+        columns = [c["name"] for c in inspector.get_columns("bookings")]
+        if "completed_on" not in columns:
+            db.session.execute(text("ALTER TABLE bookings ADD COLUMN completed_on DATETIME"))
+            db.session.commit()
 
 
 def create_app():

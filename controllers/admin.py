@@ -279,8 +279,17 @@ def toggle_blacklist(user_id):
 @admin_bp.route("/bookings")
 @role_required("admin")
 def bookings():
-    records = Booking.query.order_by(Booking.booking_date.desc()).all()
-    return render_template("admin/bookings.html", bookings=records)
+    """All booking records and trekking history, filterable by status."""
+    status = request.args.get("status", "")
+    query = Booking.query
+    if status in ("Booked", "Completed", "Cancelled"):
+        query = query.filter_by(status=status)
+    else:
+        status = ""
+    records = query.order_by(Booking.booking_date.desc()).all()
+    return render_template(
+        "admin/bookings.html", bookings=records, status=status
+    )
 
 
 # ------------------------------------------------------------------ search
