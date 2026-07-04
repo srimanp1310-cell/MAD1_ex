@@ -83,7 +83,6 @@ class Trek(db.Model):
     difficulty = db.Column(db.String(10), nullable=False)  # Easy/Moderate/Hard
     duration_days = db.Column(db.Integer, nullable=False)
     total_slots = db.Column(db.Integer, nullable=False)
-    available_slots = db.Column(db.Integer, nullable=False)
     status = db.Column(
         db.String(12), nullable=False, default="Pending"
     )  # Pending / Approved / Open / Closed / Started / Completed
@@ -100,6 +99,11 @@ class Trek(db.Model):
     def booked_count(self):
         """Number of active (non-cancelled) bookings."""
         return self.bookings.filter(Booking.status != "Cancelled").count()
+
+    @property
+    def available_slots(self):
+        """Slots remaining — always total capacity minus active bookings."""
+        return max(self.total_slots - self.booked_count, 0)
 
     def __repr__(self):
         return f"<Trek {self.id} {self.name} [{self.status}]>"

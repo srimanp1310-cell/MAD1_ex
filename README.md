@@ -38,3 +38,4 @@ progresses.
 | # | Issue | Resolution |
 |---|-------|------------|
 | 1 | Trek form accepted a duration that contradicted the start/end dates (e.g. 3 days with a 5-day date range). | Added backend validation in `_validate_trek_form` to require duration = (end − start) + 1 days, inclusive. |
+| 2 | Staff could manually set "available slots", letting it drift from real bookings (slots appeared filled with zero participants). | Removed the stored `available_slots` column; it is now always computed as total slots − active bookings. Staff edit total capacity instead. |

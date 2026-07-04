@@ -54,24 +54,29 @@ def manage_trek(trek_id):
 @staff_bp.route("/treks/<int:trek_id>/update", methods=["POST"])
 @role_required("staff")
 def update_trek(trek_id):
-    """Staff can update available slots and Open/Closed status."""
+    """Staff update total slots (capacity) and Open/Closed status.
+
+    Available slots are never set directly — they are computed as
+    total_slots minus active bookings (see Trek.available_slots).
+    """
     trek = _owned_trek_or_404(trek_id)
     errors = []
 
-    raw_slots = request.form.get("available_slots", "").strip()
+    raw_slots = request.form.get("total_slots", "").strip()
     status = request.form.get("status", "").strip()
 
     slots = None
     try:
         slots = int(raw_slots)
-        if slots < 0:
+        if slots <= 0:
             raise ValueError
-        if slots > trek.total_slots:
+        if slots < trek.booked_count:
             errors.append(
-                f"Available slots cannot exceed total slots ({trek.total_slots})."
+                "Total slots cannot be less than current active bookings "
+                f"({trek.booked_count})."
             )
     except ValueError:
-        errors.append("Available slots must be a non-negative whole number.")
+        errors.append("Total slots must be a positive whole number.")
 
     if status not in ("Open", "Closed"):
         errors.append("Status must be Open or Closed.")
@@ -85,10 +90,10 @@ def update_trek(trek_id):
         for e in errors:
             flash(e, "danger")
     else:
-        trek.available_slots = slots
+        trek.total_slots = slots
         trek.status = status
         db.session.commit()
-        flash("Trek slots and status updated.", "success")
+        flash("Trek updated. Available slots are recalculated automatically.", "success")
     return redirect(url_for("staff.manage_trek", trek_id=trek.id))
 
 

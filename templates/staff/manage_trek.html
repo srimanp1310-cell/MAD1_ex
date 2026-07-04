@@ -35,9 +35,13 @@
         {% else %}
         <form method="post" action="{{ url_for('staff.update_trek', trek_id=trek.id) }}" novalidate>
           <div class="mb-3">
-            <label class="form-label" for="available_slots">Available Slots</label>
-            <input class="form-control" type="number" id="available_slots" name="available_slots"
-                   min="0" max="{{ trek.total_slots }}" value="{{ trek.available_slots }}" required>
+            <label class="form-label" for="total_slots">Total Slots</label>
+            <input class="form-control" type="number" id="total_slots" name="total_slots"
+                   min="{{ trek.booked_count or 1 }}" value="{{ trek.total_slots }}" required>
+            <div class="form-text">
+              Available slots are calculated automatically:
+              total ({{ trek.total_slots }}) − booked ({{ trek.booked_count }}) = {{ trek.available_slots }}.
+            </div>
           </div>
           <div class="mb-3">
             <label class="form-label" for="status">Status</label>

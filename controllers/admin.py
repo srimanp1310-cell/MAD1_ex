@@ -141,7 +141,7 @@ def add_trek():
             for e in errors:
                 flash(e, "danger")
         else:
-            trek = Trek(available_slots=data["total_slots"], **data)
+            trek = Trek(**data)
             db.session.add(trek)
             db.session.commit()
             flash(f"Trek '{trek.name}' created.", "success")
@@ -172,7 +172,6 @@ def edit_trek(trek_id):
             else:
                 for key, value in data.items():
                     setattr(trek, key, value)
-                trek.available_slots = data["total_slots"] - booked
                 db.session.commit()
                 flash(f"Trek '{trek.name}' updated.", "success")
                 return redirect(url_for("admin.treks"))
