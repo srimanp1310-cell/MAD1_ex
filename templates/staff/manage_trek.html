@@ -1,0 +1,90 @@
+{% extends "staff/base_staff.html" %}
+{% set active_page = 'treks' %}
+{% block title %}Manage — {{ trek.name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('staff.treks') }}">← Back to My Treks</a>
+<div class="d-flex justify-content-between align-items-center mt-2 mb-4">
+  <h2>{{ trek.name }}</h2>
+  <span class="badge fs-6 bg-{{ 'success' if trek.status == 'Open' else 'info' if trek.status == 'Started' else 'secondary' }}">{{ trek.status }}</span>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header">Trek Information</div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-5">Location</dt><dd class="col-sm-7">{{ trek.location }}</dd>
+          <dt class="col-sm-5">Difficulty</dt><dd class="col-sm-7">{{ trek.difficulty }}</dd>
+          <dt class="col-sm-5">Duration</dt><dd class="col-sm-7">{{ trek.duration_days }} days</dd>
+          <dt class="col-sm-5">Start Date</dt><dd class="col-sm-7">{{ trek.start_date.strftime('%d %b %Y') if trek.start_date else '—' }}</dd>
+          <dt class="col-sm-5">End Date</dt><dd class="col-sm-7">{{ trek.end_date.strftime('%d %b %Y') if trek.end_date else '—' }}</dd>
+          <dt class="col-sm-5">Total Slots</dt><dd class="col-sm-7">{{ trek.total_slots }}</dd>
+          <dt class="col-sm-5">Available Slots</dt><dd class="col-sm-7">{{ trek.available_slots }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header">Update Slots &amp; Status</div>
+      <div class="card-body">
+        {% if trek.status in ('Started', 'Completed') %}
+          <p class="text-muted mb-0">This trek is {{ trek.status.lower() }} — slots and status can no longer be edited.</p>
+        {% else %}
+        <form method="post" action="{{ url_for('staff.update_trek', trek_id=trek.id) }}" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="available_slots">Available Slots</label>
+            <input class="form-control" type="number" id="available_slots" name="available_slots"
+                   min="0" max="{{ trek.total_slots }}" value="{{ trek.available_slots }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="status">Status</label>
+            <select class="form-select" id="status" name="status" required>
+              <option value="Open" {{ 'selected' if trek.status == 'Open' }}>Open</option>
+              <option value="Closed" {{ 'selected' if trek.status == 'Closed' }}>Closed</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit">Save Changes</button>
+        </form>
+        {% endif %}
+        <hr>
+        <div class="d-flex gap-2">
+          {% if trek.status not in ('Started', 'Completed') %}
+          <form method="post" action="{{ url_for('staff.mark_trek', trek_id=trek.id, action='started') }}">
+            <button class="btn btn-outline-info" type="submit">Mark as Started</button>
+          </form>
+          {% endif %}
+          {% if trek.status != 'Completed' %}
+          <form method="post" action="{{ url_for('staff.mark_trek', trek_id=trek.id, action='completed') }}">
+            <button class="btn btn-outline-success" type="submit">Mark as Completed</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h5 class="mt-4">Participants ({{ participants|length }})</h5>
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr><th>User Name</th><th>Email</th><th>Booking Date</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for b in participants %}
+      <tr>
+        <td>{{ b.user.full_name }}</td>
+        <td>{{ b.user.email }}</td>
+        <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
+        <td><span class="badge bg-{{ 'success' if b.status == 'Booked' else 'secondary' if b.status == 'Completed' else 'danger' }}">{{ b.status }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-center text-muted py-3">No participants yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+<div class="card shadow-sm">
+  <table class="table table-hover mb-0 align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Trek Name</th><th>Location</th><th>Participants</th>
+        <th>Available Slots</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in treks %}
+      <tr>
+        <td>{{ t.name }}</td>
+        <td>{{ t.location }}</td>
+        <td>{{ t.booked_count }}</td>
+        <td>{{ t.available_slots }}/{{ t.total_slots }}</td>
+        <td><span class="badge bg-{{ 'success' if t.status == 'Open' else 'info' if t.status == 'Started' else 'secondary' }}">{{ t.status }}</span></td>
+        <td><a class="btn btn-sm btn-primary" href="{{ url_for('staff.manage_trek', trek_id=t.id) }}">Manage</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-3">No treks assigned to you yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

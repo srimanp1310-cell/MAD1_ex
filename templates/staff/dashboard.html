@@ -1,9 +1,26 @@
-{% extends "base.html" %}
+{% extends "staff/base_staff.html" %}
+{% set active_page = 'dashboard' %}
 {% block title %}Staff Dashboard{% endblock %}
-{% block sidebar %}
-<li class="nav-item"><a class="nav-link active" href="{{ url_for('staff.dashboard') }}">Dashboard</a></li>
-{% endblock %}
 {% block content %}
-<h2>My Dashboard</h2>
-<p class="text-muted">Staff trek management features arrive in a later milestone.</p>
+<h2 class="mb-4">My Dashboard</h2>
+
+<div class="row g-3 mb-4">
+  {% for label, value in [
+      ('Assigned Treks', stats.assigned),
+      ('Total Participants', stats.participants),
+      ('Open Treks', stats.open),
+  ] %}
+  <div class="col-md-4">
+    <div class="card shadow-sm text-center">
+      <div class="card-body">
+        <h6 class="text-muted">{{ label }}</h6>
+        <h2 class="mb-0">{{ value }}</h2>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<h5>My Assigned Treks</h5>
+{% include "staff/_trek_table.html" %}
 {% endblock %}
