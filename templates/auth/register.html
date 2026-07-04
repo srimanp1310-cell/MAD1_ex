@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Register — Trekking Management Application{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h3 class="card-title text-center mb-4">Register</h3>
+        <form method="post" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="full_name">Full Name</label>
+            <input class="form-control" type="text" id="full_name" name="full_name"
+                   value="{{ form.get('full_name', '') }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-control" type="email" id="email" name="email"
+                   value="{{ form.get('email', '') }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-control" type="password" id="password" name="password"
+                   minlength="6" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="confirm_password">Confirm Password</label>
+            <input class="form-control" type="password" id="confirm_password"
+                   name="confirm_password" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="role">I am a</label>
+            <select class="form-select" id="role" name="role" required>
+              <option value="" {{ 'selected' if not form.get('role') }}>-- Select Role --</option>
+              <option value="user" {{ 'selected' if form.get('role') == 'user' }}>User (Trekker)</option>
+              <option value="staff" {{ 'selected' if form.get('role') == 'staff' }}>Trek Staff</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="contact_number">Contact Number <small class="text-muted">(for staff)</small></label>
+            <input class="form-control" type="text" id="contact_number" name="contact_number"
+                   value="{{ form.get('contact_number', '') }}">
+          </div>
+          <button class="btn btn-primary w-100" type="submit">Register</button>
+        </form>
+        <p class="text-center mt-3 mb-0">
+          Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Staff Dashboard{% endblock %}
+{% block sidebar %}
+<li class="nav-item"><a class="nav-link active" href="{{ url_for('staff.dashboard') }}">Dashboard</a></li>
+{% endblock %}
+{% block content %}
+<h2>My Dashboard</h2>
+<p class="text-muted">Staff trek management features arrive in a later milestone.</p>
+{% endblock %}

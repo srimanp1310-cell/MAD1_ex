@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block sidebar %}
+<li class="nav-item"><a class="nav-link active" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<p class="text-muted">Admin management features arrive in the next milestone.</p>
+{% endblock %}
