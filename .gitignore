@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# SQLite database (created programmatically at runtime)
+instance/
+*.db
+*.sqlite3
+
+# Editor/OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Course documents (not part of the codebase)
+*.pdf
